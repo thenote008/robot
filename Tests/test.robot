@@ -1,113 +1,76 @@
 *** Settings ***
 Library  SeleniumLibrary
-Library  String
 Test Setup  Begin Web Test
 Test Teardown  End Web Test
 
 
 *** Variables ***
 ${BROWSER} =  edge
-${GOOGLE_URL} =  https://www.google.com/
-${FACEBOOK_URL} =  https://www.facebook.com/
-${SEARCH_KEYWORD} =  Robot Framework
-${FACEBOOK_EMAIL} =  gwzwtxh_bharambeman_1664185345@tfbnw.net
-${FACEBOOK_PASSWORD} =  mwvukk1qo27
+${SLIDESHARE_URL} =  https://www.slideshare.net/
+${SEARCH_KEYWORD} =  Robot framework
+${SLIDE_NAME} =  Scripting robot
+${PAGE_NUMBER} =  7
 
 
 *** Test Cases ***
-User can search in google
-    Open Google Website
-    Perform Google Search
-
-User can post in facebook
-    Open Facebook Website
-    Login to Facebook
-    Create New Post
+User can open "scripting robot" slide
+    Open Slideshare Website
+    Perform Search  ${SEARCH_KEYWORD}
+    Go To Page  ${PAGE_NUMBER}
+    Select Slide  ${SLIDE_NAME}
+    Sleep  5
 
 
 *** Keywords ***
-Open Google Website
-    Loading Google Web
-    Verifying Google Web loaded
+Open Slideshare Website
+    Loading Slideshare Web
+    Verifying Slideshare Web loaded
 
-Loading Google Web
-    Go To  ${GOOGLE_URL}
+Loading Slideshare Web
+    Go To  ${SLIDESHARE_URL}
 
-Verifying Google Web Loaded
-    Page Should Contain Image  Google
+Verifying Slideshare Web Loaded
+    Page Should Contain Image  SlideShare a Scribd company logo
 
-Perform Google Search
+Perform Search
+    [Arguments]  ${SEARCH_KEYWORD}
     Enter Search Keywords  ${SEARCH_KEYWORD}
     Click Search Button
     Verifying Search Results  ${SEARCH_KEYWORD}
 
 Enter Search Keywords
     [Arguments]  ${SEARCH_KEYWORD}
-    Input Text  name:q  ${SEARCH_KEYWORD}
+    Input Text  id:nav-search-query  ${SEARCH_KEYWORD}
 
 Click Search Button
-    Click Button  xpath:/html/body/div[1]/div[3]/form/div[1]/div[1]/div[3]/center/input[1]
+    Click Button  id:search-submit
 
 Verifying Search Results
     [Arguments]  ${SEARCH_KEYWORD}
-    Page Should Contain  ${SEARCH_KEYWORD}
+    Page Should Contain  results for ${SEARCH_KEYWORD}
 
+Go To Page
+    [Arguments]  ${page_number}
+    Scroll To Pagination
+    Click Link  ${page_number}
+    Verifying Pagination Number  ${page_number}
 
-Open Facebook Website
-    Loading Facebook Web
-    Verifying Facebook Web loaded
+Scroll To Pagination
+    Scroll Element Into View  class:current
 
-Loading Facebook Web
-    Go To  ${FACEBOOK_URL}
+Verifying Pagination Number
+    [Arguments]  ${page_number}
+    Element Should Contain  class:result-count  ${page_number}
 
-Verifying Facebook Web loaded
-    Page Should Contain Image  Facebook
+Select Slide
+    [Arguments]  ${slide_name}
+    Click Link  ${slide_name}
+    Verifying Slide Name  ${slide_name}
 
-Login to Facebook
-    Enter Email  ${FACEBOOK_EMAIL}
-    Enter Password  ${FACEBOOK_PASSWORD}
-    Click Login Button
-    Verifying Facebook Login
+Verifying Slide Name
+    [Arguments]  ${slide_name}
+    Element Should Contain  class:slideshow-header  ${slide_name}
 
-Enter Email
-    [Arguments]  ${FACEBOOK_EMAIL}
-    Input Text  id:email  ${FACEBOOK_EMAIL}
-
-Enter Password
-    [Arguments]  ${FACEBOOK_PASSWORD}
-    Input Text  id:pass  ${FACEBOOK_PASSWORD}
-
-Click Login Button
-    Click Button  name:login
-
-Verifying Facebook login
-    Page Should Contain  Messenger
-
-Create New Post
-    Click Create New Post Button
-    ${FACEBOOK_MSG} =  Generate Random String  8  [LOWER]
-    Enter Post Message  ${FACEBOOK_MSG}
-    Click Post Button
-    Verifying Post Message  ${FACEBOOK_MSG}
-
-Click Create New Post Button
-    Click Element  xpath:/html/body/div[1]/div[1]/div[1]/div/div[2]/div[4]/div[1]/div[3]/span/div
-    Wait Until Element Is Visible  xpath:/html/body/div[1]/div[1]/div[1]/div/div[2]/div[4]/div[2]/div/div/div[1]/div[1]/div/div/div/div/div/div/div/div[2]/div[1]/div  2
-    Click Element  xpath:/html/body/div[1]/div[1]/div[1]/div/div[2]/div[4]/div[2]/div/div/div[1]/div[1]/div/div/div/div/div/div/div/div[2]/div[1]/div
-    Wait Until Element Is Visible  xpath:/html/body/div[4]/div[1]/div/div[2]/div/div/div/form/div/div[1]/div/div/div/div[2]/div[1]/div[1]/div[1]
-
-Enter Post Message
-    [Arguments]  ${POST_MSG}
-    Input Text  xpath:/html/body/div[4]/div[1]/div/div[2]/div/div/div/form/div/div[1]/div/div/div/div[2]/div[1]/div[1]/div[1]/div/div/div/p  ${POST_MSG}
-
-Click Post Button
-    Click Element  xpath:/html/body/div[4]/div[1]/div/div[2]/div/div/div/form/div/div[1]/div/div/div/div[3]/div[2]/div
-    Sleep  1
-    Loading Facebook Web
-
-Verifying Post Message
-    [Arguments]  ${FACEBOOK_MSG}
-    Page Should Contain  ${FACEBOOK_MSG}
 
 Begin Web Test
     Open Browser  abount:blank  ${BROWSER}
@@ -115,4 +78,3 @@ Begin Web Test
 
 End Web Test
     Close Browser
-
